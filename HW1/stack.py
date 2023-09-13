@@ -42,7 +42,7 @@ class Stack():
 
     def dump(self):
         '''
-        Empties stack and returns generator of the stack
+        Empties stack and returns a generator of the stack
         '''
         while self.__top_element.previous_element():
             yield self.pop()
@@ -52,12 +52,18 @@ class Stack():
         return self.__top_element.view_element()
 
     def is_empty(self):
+        '''
+        Returns True if stack is empty, false otherwise.
+        '''
         if self.__top_element.previous_element() == None and self.__top_element.view_element() == None: 
             return True # Previous element is None 
         else: 
             return False # Previous element is not None (ie: floor)
     
     def is_full(self):
+        '''
+        Returns True if stack is full, false otherwise.
+        '''
         return not self.is_empty()
     
 
