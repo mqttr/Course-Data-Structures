@@ -1,4 +1,4 @@
-from stack import *
+from stack.stack import *
 import random
 
 class Test_Stack():

@@ -90,8 +90,8 @@ if __name__ == "__main__":
     s.push(2)
     s.push(1)
 
-    for x in s.peek_stack():
-        print(x)
+    for i, x in enumerate(s.peek_stack()):
+        print(i, x)
 
     for x in s.dump():
         print(x)

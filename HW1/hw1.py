@@ -23,14 +23,14 @@ class LinkedList:
         temp_node: Node = self.head
 
         ## iterating until we reach the end of the linked list
-    while temp_node != None:
-        ## printing the node data
-        print(temp_node.data, end='->')
+        while temp_node != None:
+            ## printing the node data
+            print(temp_node.data, end='->')
 
-            ## moving to the next node
-        temp_node = temp_node.next
+                ## moving to the next node
+            temp_node = temp_node.next
 
-        print('Null')
+            print('Null')
 
     ##############################################
     ## Implement functions belows
@@ -38,28 +38,70 @@ class LinkedList:
     # add new node and sort the list
     # You can change the return values (from void to any) for each function as you want 
     # you can add functions as you want 
+
     def sortedAdd(self, value):
         newNode: Node = Node(value)
-            
-        if self.head == None:
-            pass
+        self.add(value, index=1)
+
+    def gen_nodes(self) -> tuple[Node | None, Node, Node | None]:
+        '''
+        Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
+        '''
+        currentNode = self.head
+        previousNode = currentNode
+        while currentNode:          
+            yield (previousNode, currentNode, currentNode.next)
+            previousNode = currentNode
+            currentNode = currentNode.next 
         
+        return
 
     def remove(self, idx):
-        pass
+        try:
+            pass
+        except IndexError:
+            return
 
     # find the maximum values in the list
     def findMax(self):
         # return max_value in the list
-        pass
+        for node in self.gen_nodes():
+            pass
+
+        return node.data
 
     # print linkedlist in a reversed order
     def printReversedList(self):
         s = Stack()
+
+        for p,node,n in self.gen_nodes():
+            print(f"NODE = {node}")
+            s.push(node)
+
+        for node in s.dump():
+            print(node.data, end=' <- ')
+
+        print("NULL")
      
     # Extra functions
-    def add(self, value):
-        pass
+    def add(self, value, index=-1) -> tuple[int, Node]:
+        currentNode = None
+        for i, (previousNode, currentNode, nextNode) in enumerate(self.gen_nodes()):
+            if i == index:
+                break
+        
+        insertNode = Node(value)
+        if currentNode == None:
+            self.head = insertNode
+        elif nextNode == None:
+            currentNode.next = insertNode
+        else:
+            previousNode.next = insertNode
+            insertNode.next = currentNode      
+
+        return (index, currentNode)
+
+        
 
 class Element():
     def __init__(self, data: any, prev):
@@ -136,20 +178,33 @@ class Stack():
         
         return 
 
-
 if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
-    # Your testcase will be here.
-     # This is a testcase example.
-    l.sortedAdd(5)
-    l.sortedAdd(2)
-    l.sortedAdd(9)
-    l.sortedAdd(1)
-    l.sortedAdd(7)
-
-    print(l.findMax())
+    l.add(5)
+    l.add(10)
+    l.add(15)
+    l.add(3, index=1)
+    for prev,current,nxt in l.gen_nodes():
+        print("GEN_NODES:", current.data)
 
     l.printReversedList()
+
+    # Your testcase will be here.
+     # This is a testcase example.
+    # l.sortedAdd(5)
+    # l.sortedAdd(2)
+    # l.sortedAdd(9)
+    # l.sortedAdd(1)
+    # l.sortedAdd(7)
+
+    # print(l.findMax())
+
+
+    # print('\n\n')
+    import gc
+    for obj in gc.get_objects(): 
+        if isinstance(obj, Node): # Print all Node objects
+            print("Node Objects:", obj.data)
     #################################
