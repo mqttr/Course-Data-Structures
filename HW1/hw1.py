@@ -39,17 +39,29 @@ class LinkedList:
     # You can change the return values (from void to any) for each function as you want 
     # you can add functions as you want 
 
-    def sortedAdd(self, value):
-        newNode: Node = Node(value)
-        self.add(value, index=1)
+    def sortedAdd(self, value: int):
+        index = -1
+        for index, (previousNode, currentNode, nextNode) in enumerate(self.get_nodes()):
+            if nextNode == None:
+                self.add(value)
+                break
+            if currentNode == None: 
+                self.add(value)
+                break
+            elif currentNode < value < nextNode:
+                self.add(value, index+1)
+                break
 
-    def gen_nodes(self) -> tuple[Node | None, Node, Node | None]:
+                
+        return (index, value)
+
+    def get_nodes(self) -> tuple[Node | None, Node, Node | None]:
         '''
         Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
         '''
         currentNode = self.head
         previousNode = currentNode
-        while currentNode:          
+        while currentNode:     
             yield (previousNode, currentNode, currentNode.next)
             previousNode = currentNode
             currentNode = currentNode.next 
@@ -65,16 +77,18 @@ class LinkedList:
     # find the maximum values in the list
     def findMax(self):
         # return max_value in the list
-        for node in self.gen_nodes():
-            pass
+        max = self.head
+        for prev,node,nxt in self.get_nodes():
+            if max < node.data:
+                max = node.data
 
-        return node.data
+        return max
 
     # print linkedlist in a reversed order
     def printReversedList(self):
         s = Stack()
 
-        for p,node,n in self.gen_nodes():
+        for p,node,n in self.get_nodes():
             print(f"NODE = {node}")
             s.push(node)
 
@@ -84,9 +98,9 @@ class LinkedList:
         print("NULL")
      
     # Extra functions
-    def add(self, value, index=-1) -> tuple[int, Node]:
+    def add(self, value: int, index=-1) -> tuple[int, Node]:
         currentNode = None
-        for i, (previousNode, currentNode, nextNode) in enumerate(self.gen_nodes()):
+        for i, (previousNode, currentNode, nextNode) in enumerate(self.get_nodes()):
             if i == index:
                 break
         
@@ -182,11 +196,12 @@ if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
+    l.add(1)
     l.add(5)
     l.add(10)
-    l.add(15)
-    l.add(3, index=1)
-    for prev,current,nxt in l.gen_nodes():
+    l.add(2)
+
+    for prev,current,nxt in l.get_nodes():
         print("GEN_NODES:", current.data)
 
     l.printReversedList()
