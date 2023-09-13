@@ -9,18 +9,18 @@ class Element():
     def previous_element(self):
         return self.__prev
     
-    def __str__(self):
-        return str(self.__data)
+    # def __str__(self):
+    #     return str(self.__data)
 
 
 class Stack():
     def __init__(self):
         __floor = Element(None, None)
-        self.__top_element = __floor
+        self.__top_element: Element = __floor
 
     def push(self, data: any) -> bool:
         '''
-        Adds value to stack.
+        Adds data to stack.
         '''
         # try:
         #     self.stack.append(value)
@@ -30,42 +30,65 @@ class Stack():
         
         newElement = Element(data, self.__top_element)
         self.__top_element = newElement
-        
         return
 
     def pop(self):
         '''
         Pops and returns value from stack. Returns None if stack empty
         '''
-        elementRemoved = self.__top_element
-        self.__top_element = elementRemoved.previous_element()
-        del elementRemoved
-        return elementRemoved.view_element()
+        value = self.__top_element.view_element()
+        self.__top_element = self.__top_element.previous_element()
+        return value
 
     def dump(self):
-        pass
+        '''
+        Empties stack and returns generator of the stack
+        '''
+        while self.__top_element.previous_element():
+            yield self.pop()
+        return
 
     def top(self):
-        return 
+        return self.__top_element.view_element()
 
     def is_empty(self):
-        return 
+        if self.__top_element.previous_element() == None and self.__top_element.view_element() == None: 
+            return True # Previous element is None 
+        else: 
+            return False # Previous element is not None (ie: floor)
     
     def is_full(self):
         return not self.is_empty()
     
 
 
-    # 'peeks' the entire stack and returns generator
-    def __str__(self):
-        pass
+    # Non-stack-esque functions
+    def peek_stack(self):
+        '''
+        Seeks through the stack and returns a generator.
+        '''
+        ele = self.__top_element
+        while ele.previous_element():
+            yield ele.view_element()
+            ele = ele.previous_element()
+        
+        return 
 
 
 if __name__ == "__main__":
     s = Stack()
 
-
     s.push(5)
+    s.push(4)
+    s.push(3)
+    s.push(2)
+    s.push(1)
+
+    for x in s.peek_stack():
+        print(x)
+
+    for x in s.dump():
+        print(x)
 
     # Print all known elements
     import gc
