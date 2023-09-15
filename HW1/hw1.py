@@ -2,121 +2,6 @@
 #ID:    98210287
 #Email: mroland@unomaha.edu     
 
-# You are not allowed to modify this class
-class Node:
-    def __init__(self, data):
-        ## data of the node
-        self.data = data
-
-        ## next pointer
-        self.next = None
-
-# You can modify this class as you want
-class LinkedList:
-    def __init__(self):
-        ## initializing the head with None
-        self.head = None
-        self.n = 0
-
-    def display(self):
-        ## variable for iteration
-        temp_node: Node = self.head
-
-        ## iterating until we reach the end of the linked list
-        while temp_node != None:
-            ## printing the node data
-            print(temp_node.data, end='->')
-
-                ## moving to the next node
-            temp_node = temp_node.next
-
-        print('Null')
-
-    ##############################################
-    ## Implement functions belows
-    ##############################################
-    # add new node and sort the list
-    # You can change the return values (from void to any) for each function as you want 
-    # you can add functions as you want 
-
-    def sortedAdd(self, value: int):
-        index = -1
-        for index, (previousNode, currentNode, nextNode) in enumerate(self.get_nodes()):
-            if nextNode == None:
-                self.add(value)
-                break
-            if currentNode == None: 
-                self.add(value)
-                break
-            elif currentNode < value < nextNode:
-                self.add(value, index+1)
-                break
-
-                
-        return (index, value)
-
-    def get_nodes(self) -> tuple[Node | None, Node, Node | None]:
-        '''
-        Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
-        '''
-        currentNode = self.head
-        previousNode = currentNode
-        while currentNode:     
-            yield (previousNode, currentNode, currentNode.next)
-            previousNode = currentNode
-            currentNode = currentNode.next 
-        
-        return
-
-    def remove(self, idx):
-        try:
-            pass
-        except IndexError:
-            return
-
-    # find the maximum values in the list
-    def findMax(self):
-        # return max_value in the list
-        max = self.head
-        for prev,node,nxt in self.get_nodes():
-            if max < node.data:
-                max = node.data
-
-        return max
-
-    # print linkedlist in a reversed order
-    def printReversedList(self):
-        s = Stack()
-
-        for p,node,n in self.get_nodes():
-            print(f"NODE = {node}")
-            s.push(node)
-
-        for node in s.dump():
-            print(node.data, end=' <- ')
-
-        print("NULL")
-     
-    # Extra functions
-    def add(self, value: int, index=-1) -> tuple[int, Node]:
-        currentNode = None
-        for i, (previousNode, currentNode, nextNode) in enumerate(self.get_nodes()):
-            if i == index:
-                break
-        
-        insertNode = Node(value)
-        if currentNode == None:
-            self.head = insertNode
-        elif nextNode == None:
-            currentNode.next = insertNode
-        else:
-            previousNode.next = insertNode
-            insertNode.next = currentNode      
-
-        return (index, currentNode)
-
-        
-
 class Element():
     def __init__(self, data: any, prev):
         self.__data = data
@@ -192,22 +77,117 @@ class Stack():
         
         return 
 
+# You are not allowed to modify this class
+class Node:
+    def __init__(self, data):
+        ## data of the node
+        self.data = data
+
+        ## next pointer
+        self.next = None
+
+# You can modify this class as you want
+class LinkedList:
+    def __init__(self):
+        ## initializing the head with None
+        self.head = None
+        self.n = 0
+
+    def display(self):
+        ## variable for iteration
+        temp_node: Node = self.head
+
+        ## iterating until we reach the end of the linked list
+        while temp_node != None:
+            ## printing the node data
+            print(temp_node.data, end='->')
+
+                ## moving to the next node
+            temp_node = temp_node.next
+
+        print('Null')
+
+    ##############################################
+    ## Implement functions belows
+    ##############################################
+    # add new node and sort the list
+    # You can change the return values (from void to any) for each function as you want 
+    # you can add functions as you want 
+
+    def sortedAdd(self, value: int | float):
+        pass
+            
+
+    def remove(self, idx):
+        pass
+
+    def findMax(self):
+        max = self.head
+        for prev,node,nxt in self.get_nodes():
+            if max < node.data:
+                max = node.data
+
+        return max
+
+    # print linkedlist in a reversed order
+    def printReversedList(self):
+        s = Stack()
+
+        for p,node,n in self.get_nodes():
+            print(f"NODE = {node}")
+            s.push(node)
+
+        for node in s.dump():
+            print(node.data, end=' <- ')
+
+        print("HEAD")
+     
+    # Extra functions
+    def add(self, value: int, index=-1) -> tuple[int, Node]:
+        newNodeIndex: int = 0
+        newNode: Node = Node(value)
+
+        if sum(1 for node in self.get_nodes()) == 0 :
+            self.head = newNode
+            return newNodeIndex
+        
+        
+
+        return newNodeIndex
+
+    def get_nodes(self) -> tuple[Node | None, Node, Node | None]:
+        '''
+        Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
+        '''
+        previousNode: Node = None
+        currentNode: Node = self.head
+        while currentNode:
+            yield (previousNode, currentNode, currentNode.next)
+            previousNode = currentNode
+            currentNode = currentNode.next 
+
 if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
+    n1 = Node(999)
+    n2 = Node(998)
+    l.head = n1
+    n1.next = n2
+
+    # l.display()
     l.add(1)
-    l.add(5)
-    l.add(10)
-    l.add(2)
+    # l.display()
+    # l.add(5)
 
-    for prev,current,nxt in l.get_nodes():
-        print("GEN_NODES:", current, nxt)
 
-    l.display()
+
+    # for prev,current,nxt in l.get_nodes():
+    #     print("GEN_NODES:", current.data)
+
 
     # Your testcase will be here.
-    # This is a testcase example.
+     # This is a testcase example.
     # l.sortedAdd(5)
     # l.sortedAdd(2)
     # l.sortedAdd(9)
@@ -217,9 +197,9 @@ if __name__ == '__main__':
     # print(l.findMax())
 
 
-    # print('\n\n')
-    # import gc
-    # for obj in gc.get_objects(): 
-    #     if isinstance(obj, Node): # Print all Node objects
-    #         print("Node Objects:", obj.data)
+    print('\n\n')
+    import gc
+    for obj in gc.get_objects(): 
+        if isinstance(obj, Node): # Print all Node objects
+            print("Node Objects:", obj, obj.data)
     #################################
