@@ -30,7 +30,7 @@ class LinkedList:
                 ## moving to the next node
             temp_node = temp_node.next
 
-            print('Null')
+        print('Null')
 
     ##############################################
     ## Implement functions belows
@@ -202,12 +202,12 @@ if __name__ == '__main__':
     l.add(2)
 
     for prev,current,nxt in l.get_nodes():
-        print("GEN_NODES:", current.data)
+        print("GEN_NODES:", current, nxt)
 
-    l.printReversedList()
+    l.display()
 
     # Your testcase will be here.
-     # This is a testcase example.
+    # This is a testcase example.
     # l.sortedAdd(5)
     # l.sortedAdd(2)
     # l.sortedAdd(9)
@@ -218,8 +218,8 @@ if __name__ == '__main__':
 
 
     # print('\n\n')
-    import gc
-    for obj in gc.get_objects(): 
-        if isinstance(obj, Node): # Print all Node objects
-            print("Node Objects:", obj.data)
+    # import gc
+    # for obj in gc.get_objects(): 
+    #     if isinstance(obj, Node): # Print all Node objects
+    #         print("Node Objects:", obj.data)
     #################################
