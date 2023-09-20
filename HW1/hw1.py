@@ -282,9 +282,10 @@ class LinkedList:
         
         return newNodeIndex
 
-    def sortedAdd(self, value: int | float):
+    def sortedAdd(self, value: int | float) -> bool:
         """
-        Adds and sorts new Value
+        Adds and sorts new Value; when adding a lot of values at once, it is recommended to use add() then sort().
+        :param value: Value of the new node
         """
         try:
             self.add(value)
@@ -314,6 +315,15 @@ class LinkedList:
         except Exception:
             return False
 
+    def shuffle(self):
+        s = Stack()
+        node: Node
+
+        
+
+        for node in s.dump():
+            self.add(node.data)
+
 
 
 if __name__ == '__main__':
@@ -321,8 +331,8 @@ if __name__ == '__main__':
     l = LinkedList()
 
     import random
-    for x in range(1000):
-        l.sortedAdd(random.random())
+    for x in range(50):
+        l.add(random.random())
         print(x)
 
 
@@ -331,9 +341,9 @@ if __name__ == '__main__':
     l.add(99.5, 10)
     l.add(66, -4)
 
-    print("Done adding")
-
     l.sort()
+    l.display()
+    l.shuffle()
     l.display()
 
     # for prev,current,nxt in l.get_nodes():
