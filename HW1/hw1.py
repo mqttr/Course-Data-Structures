@@ -138,27 +138,7 @@ class LinkedList:
             previousNode = currentNode
             currentNode = currentNode.next       
 
-    def length(self):
-        return sum(1 for _ in self._get_nodes())
-
-    def remove(self, index) -> bool:
-        previousNode: Node
-        nextNode: Node
-
-        ((_, inList), (previousNode, _, nextNode)) = self._get_node_at_index(index)
-
-        if not inList:
-            return False
-
-        if previousNode == None:
-            self.head = nextNode
-            return True
-        else:
-            previousNode.next = nextNode
-            return True
-    
-
-    def findMax(self):
+    def _find_node_max(self) -> Node:
         """
         Returns the maximum value in the list
         """
@@ -168,11 +148,11 @@ class LinkedList:
             if max.data < node.data:
                 max = node
 
-        return max.data
-    
-    def findMin(self):
+        return max  
+
+    def _find_node_min(self) -> Node:
         """
-        Returns the minimum value in the list
+        Returns the node with the minimum value in the list
         """
         min = self.head
         node: Node
@@ -180,9 +160,51 @@ class LinkedList:
             if min.data > node.data:
                 min = node
 
-        return min.data
+        return min
+
+    #############   External Use functions  #############
+    def length(self) -> int:
+        """
+        Returns the length of the list
+        """
+        return sum(1 for _ in self._get_nodes())
+
+    def remove(self, index: int) -> bool:
+        """
+        Removes an object in the list by index, returns True if succeeds, else False if failure
+        :param index: Int of the index of the node to be removed
+        """
+        inList: bool
+        previousNode: Node
+        nextNode: Node
+
+        ((_, inList), (previousNode, _, nextNode)) = self._get_node_at_index(index)
+
+        if not inList: # Not in list -> therefore cannot be removed
+            return False
+
+        if previousNode == None:
+            self.head = nextNode
+            return True
+        else:
+            previousNode.next = nextNode
+            return True
+    
+    def findMax(self) -> float | int:
+        """
+        Returns the maximum value in the list
+        """
+        maxNode = self._find_node_max()
+        return maxNode.data
+    
+    def findMin(self) -> float | int:
+        """
+        Returns the minimum value in the list
+        """
+        minNode = self._find_node_min()
+        return minNode.data
      
-    def _get_node_at_index(self, index):
+    def _get_node_at_index(self, index: int):
         previousNode: Node
         currentNode: Node
         futureNode: Node
@@ -199,7 +221,7 @@ class LinkedList:
 
         return ((index, False), (previousNode, currentNode, futureNode))
 
-    def add(self, value: int, index=-1) -> int:
+    def add(self, value: int | float, index=-1) -> int:
         """
         Adds a node to at the param index in the list, if the index is negative > length of the list, adds to end of list.
 
@@ -240,7 +262,9 @@ class LinkedList:
         return newNodeIndex
 
     def sortedAdd(self, value: int | float):
-        pass   
+        newNode = Node(value)
+        self.add(newNode)
+        self.sort() 
 
     def sort(self):
         pass
@@ -252,19 +276,30 @@ if __name__ == '__main__':
     for x in range(15):
         l.add(x)
 
-    # l.add(-5, 5)
-    # l.add(99, 10)
-    # l.add(66, -4)
+    l.add(-5, 5)
+    l.add(99, 10)
+    l.add(66, -4)
+
 
     l.display()
 
+    print(f"FindMin: {l.findMin()}")
+    print(f"FindMax: {l.findMax()}")
+
+    print(f"Removed {l.remove(3)}")
+    print(f"Removed {l.remove(0)}")
+    print(f"Removed {l.remove(5)}")
     print(f"Removed {l.remove(3)}")
     print(f"Removed {l.remove(0)}")
     print(f"Removed {l.remove(5)}")
 
 
     l.display()
-    
+
+    print(f"FindMin: {l.findMin()}")
+    print(f"FindMax: {l.findMax()}")
+
+
     # for prev,current,nxt in l.get_nodes():
     #     print("GEN_NODES:", current.data)
 
