@@ -107,53 +107,137 @@ class LinkedList:
 
         print('Null')
 
-    ##############################################
-    ## Implement functions belows
-    ##############################################
-    # add new node and sort the list
-    # You can change the return values (from void to any) for each function as you want 
-    # you can add functions as you want 
-
     def sortedAdd(self, value: int | float):
-        pass
-            
+        pass         
 
-    def remove(self, idx):
-        pass
+    def remove(self, index):
+        if index > self.length():
+            return False # Index is too large
+        if index < 0:
+            index = index + self.length() + 2                                              # THIS IS UNTESTED DO NOT TRY NEGATIVE INDEXES
+
+        previousNode: Node
+        currentNode: Node
+        futureNode: Node
+
+
+        # Get node to be removed
+        genList = enumerate(self.get_nodes())
+        for i, nodes in genList:
+            previousNode, currentNode, futureNode = nodes
+            if i == index:
+                break
+
+
+
+        return False # Returns false if failed
+    
 
     def findMax(self):
+        """
+        Returns the maximum value in the list
+        """
         max = self.head
-        for prev,node,nxt in self.get_nodes():
-            if max < node.data:
-                max = node.data
+        node: Node
+        for _,node,_ in self.get_nodes():
+            if max.data < node.data:
+                max = node
 
-        return max
+        return max.data
+    
+    def findMin(self):
+        """
+        Returns the minimum value in the list
+        """
+        min = self.head
+        node: Node
+        for _,node,_ in self.get_nodes():
+            if min.data > node.data:
+                min = node
+
+        return min.data
 
     # print linkedlist in a reversed order
     def printReversedList(self):
         s = Stack()
 
-        for p,node,n in self.get_nodes():
-            print(f"NODE = {node}")
+        for _,node,_ in self.get_nodes():
             s.push(node)
 
         for node in s.dump():
-            print(node.data, end=' <- ')
+            print(node.data, end='<-')
 
         print("HEAD")
      
-    # Extra functions
-    def add(self, value: int, index=-1) -> tuple[int, Node]:
-        newNodeIndex: int = 0
-        newNode: Node = Node(value)
+    def length(self):
+        return sum(1 for _ in self.get_nodes())
 
-        if sum(1 for node in self.get_nodes()) == 0 :
+    def get_node_at_index(self, index):
+        previousNode: Node
+        currentNode: Node
+        futureNode: Node
+
+        if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
+            length = self.length()
+            index = index + length
+
+        genList = enumerate(self.get_nodes())
+        for i, nodes in genList:
+            previousNode, currentNode, futureNode = nodes
+            if i == index:
+                break
+
+        return (index, previousNode, currentNode, futureNode)
+
+    def add(self, value: int, index=-1) -> int:
+        """
+        Adds a node to at the param index in the list, if the index is negative > length of the list, adds to end of list.
+
+        :param value: integer value of the node
+        :param index: default = -1, index of the new node, acceptes negative or positive values
+        """
+        newNodeIndex: int = 0
+        
+        newNode: Node = Node(value)
+        previousNode: Node
+        currentNode: Node
+        futureNode: Node
+
+        if self.length() == 0 : # if Linked list is empty
             self.head = newNode
             return newNodeIndex
         
-        
+        if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
+            length = self.length()
+            index = index + length + 1
 
+        afterIndexFlag = True
+        genList = enumerate(self.get_nodes())
+        for i, nodes in genList:
+            previousNode, currentNode, futureNode = nodes
+            if i == index:
+                afterIndexFlag = False
+                break
+            newNodeIndex +=1
+
+        # print(i, previousNode, currentNode, futureNode)
+        if afterIndexFlag: # Place after the element at index
+            currentNode.next = newNode
+            newNode.next = futureNode
+        else: # Place before the element at index
+            if previousNode == None: 
+                self.head = newNode
+                newNode.next = currentNode
+            else:
+                previousNode.next = newNode
+                newNode.next = currentNode
+        
+        if index > self.length():
+            newNodeIndex = -1
+        
         return newNodeIndex
+
+
 
     def get_nodes(self) -> tuple[Node | None, Node, Node | None]:
         '''
@@ -170,36 +254,33 @@ if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
-    n1 = Node(999)
-    n2 = Node(998)
-    l.head = n1
-    n1.next = n2
+    for x in range(15):
+        print(l.add(x))
 
-    # l.display()
-    l.add(1)
-    # l.display()
-    # l.add(5)
+    l.add(-5, 5)
+    l.add(99, 10)
+    l.add(66, -4)
 
-
-
+    l.display()
+    
+    index, previousNode, currentNode, futureNode = l.get_node_at_index(-3)
+    print(index, currentNode.data, futureNode.data)
     # for prev,current,nxt in l.get_nodes():
     #     print("GEN_NODES:", current.data)
 
-
-    # Your testcase will be here.
-     # This is a testcase example.
     # l.sortedAdd(5)
     # l.sortedAdd(2)
     # l.sortedAdd(9)
     # l.sortedAdd(1)
     # l.sortedAdd(7)
 
-    # print(l.findMax())
+    # print("Max:", l.findMax())
+    # print("Min:", l.findMin())
 
 
-    print('\n\n')
-    import gc
-    for obj in gc.get_objects(): 
-        if isinstance(obj, Node): # Print all Node objects
-            print("Node Objects:", obj, obj.data)
-    #################################
+
+    # print('\n\nNODE OBJECTS: ')
+    # import gc
+    # for obj in gc.get_objects(): 
+    #     if isinstance(obj, Node): # Print all Node objects
+    #         print("Node Objects:", obj, obj.data)
