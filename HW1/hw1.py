@@ -208,7 +208,7 @@ class LinkedList:
             previousNode.next = nextNode
             return True
 
-    #############   External Use functions  #############
+    #############   External Use functions   #############
     def length(self) -> int:
         """
         Returns the length of the list
@@ -283,46 +283,58 @@ class LinkedList:
         return newNodeIndex
 
     def sortedAdd(self, value: int | float):
-        newNode = Node(value)
-        self.add(newNode)
-        self.sort() 
+        """
+        Adds and sorts new Value
+        """
+        try:
+            self.add(value)
+            self.sort() 
+            return True
+        except Exception:
+            return False
 
-    def sort(self):
-        s = Stack()
+    def sort(self) -> bool:
+        """
+        Sorts list by adding max of list to stack then dumping stack
+        """
+        try:
+            s = Stack()
+            node: Node
 
-        s.push(self._find_node_max())
+            for i in range(self.length()):
+                maxNode = self._find_node_max()
+                s.push(maxNode)
+                self._remove_node(maxNode)
+
+            # input(f"DISPLAY LIST: {self.display()}")
+
+            for node in s.dump():
+                self.add(node.data)
+            return True
+        except Exception:
+            return False
+
 
 
 if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
-    for x in range(15):
-        l.add(x)
+    import random
+    for x in range(1000):
+        l.sortedAdd(random.random())
+        print(x)
+
 
     l.add(-5, 5)
-    l.add(99, 10)
+    l.add(-5, 5)
+    l.add(99.5, 10)
     l.add(66, -4)
 
+    print("Done adding")
 
+    l.sort()
     l.display()
-
-    print(f"FindMin: {l.findMin()}")
-    print(f"FindMax: {l.findMax()}")
-
-    print(f"Removed {l.remove(3)}")
-    print(f"Removed {l.remove(0)}")
-    print(f"Removed {l.remove(5)}")
-    print(f"Removed {l.remove(3)}")
-    print(f"Removed {l.remove(0)}")
-    print(f"Removed {l.remove(5)}")
-
-
-    l.display()
-
-    print(f"FindMin: {l.findMin()}")
-    print(f"FindMax: {l.findMax()}")
-
 
     # for prev,current,nxt in l.get_nodes():
     #     print("GEN_NODES:", current.data)
