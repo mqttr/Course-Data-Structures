@@ -1,6 +1,8 @@
 #Name:  Matthew Roland
 #ID:    98210287
 #Email: mroland@unomaha.edu     
+import random
+
 
 class Element():
     def __init__(self, data: any, prev):
@@ -12,9 +14,6 @@ class Element():
     
     def previous_element(self):
         return self.__prev
-    
-    # def __str__(self):
-    #     return str(self.__data)
 
 class Stack():
     def __init__(self):
@@ -126,7 +125,7 @@ class LinkedList:
 
         print("HEAD")
 
-    #############   Internal utlity functions   #############
+    #############   INTERNAL UTILITY FUNCTIONS   #############
     def _get_nodes(self) -> tuple[Node | None, Node, Node | None]:
         '''
         Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
@@ -162,7 +161,7 @@ class LinkedList:
 
         return min
 
-    def _get_node_by_index(self, index: int) -> tuple[tuple[int, bool], tuple[None | Node, Node, None | Node ]]:
+    def _get_node_by_index(self, index: int) -> ((int, bool), (None | Node, Node, None | Node )):
         previousNode: Node
         currentNode: Node
         futureNode: Node
@@ -180,6 +179,9 @@ class LinkedList:
         return ((index, False), (previousNode, currentNode, futureNode))
 
     def _get_node_by_node(self, searchNode: Node):
+        """
+        Get a node and its aspects from the node object. Returns ((Node Index, in file: bool, ), (previous Node, current node, next node)) 
+        """
         previousNode: Node
         currentNode: Node
         nextNode: Node
@@ -191,7 +193,6 @@ class LinkedList:
                 return ((i, True), (previousNode, currentNode, nextNode))
 
         return ((self.length(), False), (previousNode, currentNode, nextNode))
-
 
     def _remove_node(self, node: Node):
         listDetails, nodeDetails = l._get_node_by_node(node)
@@ -208,7 +209,7 @@ class LinkedList:
             previousNode.next = nextNode
             return True
 
-    #############   External Use functions   #############
+    #############   EXTERNAL USE FUNCTIONS   #############
     def length(self) -> int:
         """
         Returns the length of the list
@@ -319,7 +320,12 @@ class LinkedList:
         s = Stack()
         node: Node
 
-        
+        while self.head:
+            randomIndex = random.randint(0, self.length()-1)
+            ((_, _), (previousNode, currentNode, nextNode)) = self._get_node_by_index(randomIndex)
+            self._remove_node(currentNode)
+            currentNode.next = None
+            s.push(currentNode)
 
         for node in s.dump():
             self.add(node.data)
@@ -332,8 +338,7 @@ if __name__ == '__main__':
 
     import random
     for x in range(50):
-        l.add(random.random())
-        print(x)
+        l.add(random.randint(0,500))
 
 
     l.add(-5, 5)
@@ -345,9 +350,14 @@ if __name__ == '__main__':
     l.display()
     l.shuffle()
     l.display()
-
-    # for prev,current,nxt in l.get_nodes():
-    #     print("GEN_NODES:", current.data)
+    l.sort()
+    l.display()
+    l.shuffle()
+    l.display()
+    l.shuffle()
+    l.display()
+    l.sort()
+    l.display()
 
     # l.sortedAdd(5)
     # l.sortedAdd(2)
