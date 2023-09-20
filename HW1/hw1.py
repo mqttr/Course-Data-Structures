@@ -162,9 +162,9 @@ class LinkedList:
         return min
 
     def _get_node_by_index(self, index: int) -> ((int, bool), (None | Node, Node, None | Node )):
-        previousNode: Node
-        currentNode: Node
-        futureNode: Node
+        previousNode: Node = None
+        currentNode: Node = None
+        futureNode: Node = None
 
         if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
             length = self.length()
@@ -182,9 +182,9 @@ class LinkedList:
         """
         Get a node and its aspects from the node object. Returns ((Node Index, in file: bool, ), (previous Node, current node, next node)) 
         """
-        previousNode: Node
-        currentNode: Node
-        nextNode: Node
+        previousNode: Node = None
+        currentNode: Node = None
+        nextNode: Node = None
 
         genList = enumerate(self._get_nodes())
         for i, nodes in genList:
@@ -208,6 +208,47 @@ class LinkedList:
         else:
             previousNode.next = nextNode
             return True
+
+    def _add_node(self, newNode: Node, index=-1):
+        """
+        Adds a node to at the param index in the list, if the index is negative > length of the list, adds to end of list.
+
+        :param value: integer value of the node
+        :param index: default = -1, index of the new node, acceptes negative or positive values
+        """
+        newNodeIndex: int = 0
+        newNode.next = None
+
+        previousNode: Node
+        currentNode: Node
+        nextNode: Node
+
+        if self.length() == 0 : # if Linked list is empty
+            self.head = newNode
+            newNode.next = None
+            return newNodeIndex
+        
+        if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
+            index = index + self.length() + 1
+
+        listDetails, nodeDetails = l._get_node_by_index(index)
+        newNodeIndex, inList = listDetails
+        previousNode, currentNode, nextNode = nodeDetails
+
+        # print(i, previousNode, currentNode, futureNode)
+        if not inList: # Place after the element at index ( At the end of the list )
+            currentNode.next = newNode
+            newNode.next = nextNode
+            # newNodeIndex+=1
+        else: # Place before the element at index ( In the list )
+            if previousNode == None: 
+                self.head = newNode
+                newNode.next = currentNode
+            else:
+                previousNode.next = newNode
+                newNode.next = currentNode
+        
+        return newNodeIndex
 
     #############   EXTERNAL USE FUNCTIONS   #############
     def length(self) -> int:
@@ -249,39 +290,12 @@ class LinkedList:
         :param value: integer value of the node
         :param index: default = -1, index of the new node, acceptes negative or positive values
         """
-        newNodeIndex: int = 0
-        
         newNode: Node = Node(value)
-        previousNode: Node
-        currentNode: Node
-        nextNode: Node
 
-        if self.length() == 0 : # if Linked list is empty
-            self.head = newNode
-            newNode.next = None
-            return newNodeIndex
-        
-        if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
-            index = index + self.length() + 1
+        newNodeIndex: int = self._add_node(newNode, index)
 
-        listDetails, nodeDetails = l._get_node_by_index(index)
-        newNodeIndex, inList = listDetails
-        previousNode, currentNode, nextNode = nodeDetails
-
-        # print(i, previousNode, currentNode, futureNode)
-        if not inList: # Place after the element at index ( At the end of the list )
-            currentNode.next = newNode
-            newNode.next = nextNode
-            # newNodeIndex+=1
-        else: # Place before the element at index ( In the list )
-            if previousNode == None: 
-                self.head = newNode
-                newNode.next = currentNode
-            else:
-                previousNode.next = newNode
-                newNode.next = currentNode
-        
         return newNodeIndex
+
 
     def sortedAdd(self, value: int | float) -> bool:
         """
@@ -311,7 +325,7 @@ class LinkedList:
             # input(f"DISPLAY LIST: {self.display()}")
 
             for node in s.dump():
-                self.add(node.data)
+                self._add_node(node)
             return True
         except Exception:
             return False
@@ -328,7 +342,7 @@ class LinkedList:
             s.push(currentNode)
 
         for node in s.dump():
-            self.add(node.data)
+            self._add_node(node)
 
 
 
@@ -336,15 +350,25 @@ if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
-    import random
-    for x in range(50):
-        l.add(random.randint(0,500))
+    import gc
+
+    for x in range(25):
+        l.add(x)
 
 
     l.add(-5, 5)
     l.add(-5, 5)
     l.add(99.5, 10)
+    l.display()
     l.add(66, -4)
+    l.display()
+
+    s1 = Stack()
+    print('\n\nNODE OBJECTS: ')
+    for obj in gc.get_objects(): 
+        if isinstance(obj, Node): # Print all Node objects
+            print("Node Objects:", obj, obj.data)
+            s1.push(obj)
 
     l.sort()
     l.display()
@@ -358,20 +382,29 @@ if __name__ == '__main__':
     l.display()
     l.sort()
     l.display()
-
-    # l.sortedAdd(5)
-    # l.sortedAdd(2)
-    # l.sortedAdd(9)
-    # l.sortedAdd(1)
-    # l.sortedAdd(7)
 
     # print("Max:", l.findMax())
     # print("Min:", l.findMin())
 
 
+    s2 = Stack()
+    print('\n\nNODE OBJECTS: ')
+    for obj in gc.get_objects(): 
+        if isinstance(obj, Node): # Print all Node objects
+            print("Node Objects:", obj, obj.data)
+            s2.push(obj)
 
-    # print('\n\nNODE OBJECTS: ')
-    # import gc
-    # for obj in gc.get_objects(): 
-    #     if isinstance(obj, Node): # Print all Node objects
-    #         print("Node Objects:", obj, obj.data)
+    for x in range(l.length()):
+        if s1.pop() == s2.pop():
+            print(x, end=' ')
+        else:
+            print("NOT THE SAME!!!", end=' ')
+
+        
+    for dump in s1.dump():
+        print("HEY YOU MISSED SOME")
+
+    for dump in s2.dump():
+        print("HEY YOU MISSED SOME")
+
+    print()
