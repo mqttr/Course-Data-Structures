@@ -162,49 +162,7 @@ class LinkedList:
 
         return min
 
-    #############   External Use functions  #############
-    def length(self) -> int:
-        """
-        Returns the length of the list
-        """
-        return sum(1 for _ in self._get_nodes())
-
-    def remove(self, index: int) -> bool:
-        """
-        Removes an object in the list by index, returns True if succeeds, else False if failure
-        :param index: Int of the index of the node to be removed
-        """
-        inList: bool
-        previousNode: Node
-        nextNode: Node
-
-        ((_, inList), (previousNode, _, nextNode)) = self._get_node_at_index(index)
-
-        if not inList: # Not in list -> therefore cannot be removed
-            return False
-
-        if previousNode == None:
-            self.head = nextNode
-            return True
-        else:
-            previousNode.next = nextNode
-            return True
-    
-    def findMax(self) -> float | int:
-        """
-        Returns the maximum value in the list
-        """
-        maxNode = self._find_node_max()
-        return maxNode.data
-    
-    def findMin(self) -> float | int:
-        """
-        Returns the minimum value in the list
-        """
-        minNode = self._find_node_min()
-        return minNode.data
-     
-    def _get_node_at_index(self, index: int):
+    def _get_node_by_index(self, index: int) -> tuple[tuple[int, bool], tuple[None | Node, Node, None | Node ]]:
         previousNode: Node
         currentNode: Node
         futureNode: Node
@@ -221,6 +179,68 @@ class LinkedList:
 
         return ((index, False), (previousNode, currentNode, futureNode))
 
+    def _get_node_by_node(self, searchNode: Node):
+        previousNode: Node
+        currentNode: Node
+        nextNode: Node
+
+        genList = enumerate(self._get_nodes())
+        for i, nodes in genList:
+            previousNode, currentNode, nextNode = nodes
+            if currentNode == searchNode:
+                return ((i, True), (previousNode, currentNode, nextNode))
+
+        return ((self.length(), False), (previousNode, currentNode, nextNode))
+
+
+    def _remove_node(self, node: Node):
+        listDetails, nodeDetails = l._get_node_by_node(node)
+        newNodeIndex, inList = listDetails
+        previousNode, currentNode, nextNode = nodeDetails
+
+        if not inList: # Not in list -> therefore cannot be removed
+            return False
+
+        if previousNode == None:
+            self.head = nextNode
+            return True
+        else:
+            previousNode.next = nextNode
+            return True
+
+    #############   External Use functions  #############
+    def length(self) -> int:
+        """
+        Returns the length of the list
+        """
+        return sum(1 for _ in self._get_nodes())
+
+    def remove(self, index: int) -> bool:
+        """
+        Removes an object in the list by index, returns True if succeeds, else False if failure
+        :param index: Int of the index of the node to be removed
+        """
+        inList: bool
+        currentNode: Node
+
+        ((_, inList), (previousNode, currentNode, nextNode)) = self._get_node_by_index(index)
+
+        return self._remove_node(currentNode)
+    
+    def findMax(self) -> float | int:
+        """
+        Returns the maximum value in the list
+        """
+        maxNode = self._find_node_max()
+        return maxNode.data
+    
+    def findMin(self) -> float | int:
+        """
+        Returns the minimum value in the list
+        """
+        minNode = self._find_node_min()
+        return minNode.data
+
     def add(self, value: int | float, index=-1) -> int:
         """
         Adds a node to at the param index in the list, if the index is negative > length of the list, adds to end of list.
@@ -233,23 +253,24 @@ class LinkedList:
         newNode: Node = Node(value)
         previousNode: Node
         currentNode: Node
-        futureNode: Node
+        nextNode: Node
 
         if self.length() == 0 : # if Linked list is empty
             self.head = newNode
+            newNode.next = None
             return newNodeIndex
         
         if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
             index = index + self.length() + 1
 
-        listDetails, nodeDetails = l._get_node_at_index(index)
+        listDetails, nodeDetails = l._get_node_by_index(index)
         newNodeIndex, inList = listDetails
-        previousNode, currentNode, futureNode = nodeDetails
+        previousNode, currentNode, nextNode = nodeDetails
 
         # print(i, previousNode, currentNode, futureNode)
         if not inList: # Place after the element at index ( At the end of the list )
             currentNode.next = newNode
-            newNode.next = futureNode
+            newNode.next = nextNode
             # newNodeIndex+=1
         else: # Place before the element at index ( In the list )
             if previousNode == None: 
@@ -267,7 +288,10 @@ class LinkedList:
         self.sort() 
 
     def sort(self):
-        pass
+        s = Stack()
+
+        s.push(self._find_node_max())
+
 
 if __name__ == '__main__':
     ## instantiating the linked list
