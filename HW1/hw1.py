@@ -93,7 +93,11 @@ class LinkedList:
         self.head = None
         self.n = 0
 
-    def display(self):
+    #############   PRINTING FUNCTIONS  #############
+    def display(self) -> None:
+        '''
+        Given function, iterates through the list and prints the list's data
+        '''
         ## variable for iteration
         temp_node: Node = self.head
 
@@ -107,30 +111,51 @@ class LinkedList:
 
         print('Null')
 
-    def sortedAdd(self, value: int | float):
-        pass         
+    def printReversedList(self) -> None:
+        '''
+        Display list from tail to head using a stack
+        '''
+        s = Stack()
+        node: Node
 
-    def remove(self, index):
-        if index > self.length():
-            return False # Index is too large
-        if index < 0:
-            index = index + self.length() + 2                                              # THIS IS UNTESTED DO NOT TRY NEGATIVE INDEXES
+        for _,node,_ in self._get_nodes():
+            s.push(node)
 
+        for node in s.dump():
+            print(node.data, end='<-')
+
+        print("HEAD")
+
+    #############   Internal utlity functions   #############
+    def _get_nodes(self) -> tuple[Node | None, Node, Node | None]:
+        '''
+        Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
+        '''
+        previousNode: Node = None
+        currentNode: Node = self.head
+        while currentNode:
+            yield (previousNode, currentNode, currentNode.next)
+            previousNode = currentNode
+            currentNode = currentNode.next       
+
+    def length(self):
+        return sum(1 for _ in self._get_nodes())
+
+    def remove(self, index) -> bool:
         previousNode: Node
-        currentNode: Node
-        futureNode: Node
+        nextNode: Node
 
+        ((_, inList), (previousNode, _, nextNode)) = self._get_node_at_index(index)
 
-        # Get node to be removed
-        genList = enumerate(self.get_nodes())
-        for i, nodes in genList:
-            previousNode, currentNode, futureNode = nodes
-            if i == index:
-                break
+        if not inList:
+            return False
 
-
-
-        return False # Returns false if failed
+        if previousNode == None:
+            self.head = nextNode
+            return True
+        else:
+            previousNode.next = nextNode
+            return True
     
 
     def findMax(self):
@@ -139,7 +164,7 @@ class LinkedList:
         """
         max = self.head
         node: Node
-        for _,node,_ in self.get_nodes():
+        for _,node,_ in self._get_nodes():
             if max.data < node.data:
                 max = node
 
@@ -151,28 +176,13 @@ class LinkedList:
         """
         min = self.head
         node: Node
-        for _,node,_ in self.get_nodes():
+        for _,node,_ in self._get_nodes():
             if min.data > node.data:
                 min = node
 
         return min.data
-
-    # print linkedlist in a reversed order
-    def printReversedList(self):
-        s = Stack()
-
-        for _,node,_ in self.get_nodes():
-            s.push(node)
-
-        for node in s.dump():
-            print(node.data, end='<-')
-
-        print("HEAD")
      
-    def length(self):
-        return sum(1 for _ in self.get_nodes())
-
-    def get_node_at_index(self, index):
+    def _get_node_at_index(self, index):
         previousNode: Node
         currentNode: Node
         futureNode: Node
@@ -181,13 +191,13 @@ class LinkedList:
             length = self.length()
             index = index + length
 
-        genList = enumerate(self.get_nodes())
+        genList = enumerate(self._get_nodes())
         for i, nodes in genList:
             previousNode, currentNode, futureNode = nodes
             if i == index:
-                break
+                return ((index, True), (previousNode, currentNode, futureNode))
 
-        return (index, previousNode, currentNode, futureNode)
+        return ((index, False), (previousNode, currentNode, futureNode))
 
     def add(self, value: int, index=-1) -> int:
         """
@@ -208,23 +218,18 @@ class LinkedList:
             return newNodeIndex
         
         if index < 0: # Standard negative indexing, if abs(index) greater than len(list) then add to end of list
-            length = self.length()
-            index = index + length + 1
+            index = index + self.length() + 1
 
-        afterIndexFlag = True
-        genList = enumerate(self.get_nodes())
-        for i, nodes in genList:
-            previousNode, currentNode, futureNode = nodes
-            if i == index:
-                afterIndexFlag = False
-                break
-            newNodeIndex +=1
+        listDetails, nodeDetails = l._get_node_at_index(index)
+        newNodeIndex, inList = listDetails
+        previousNode, currentNode, futureNode = nodeDetails
 
         # print(i, previousNode, currentNode, futureNode)
-        if afterIndexFlag: # Place after the element at index
+        if not inList: # Place after the element at index ( At the end of the list )
             currentNode.next = newNode
             newNode.next = futureNode
-        else: # Place before the element at index
+            # newNodeIndex+=1
+        else: # Place before the element at index ( In the list )
             if previousNode == None: 
                 self.head = newNode
                 newNode.next = currentNode
@@ -232,39 +237,34 @@ class LinkedList:
                 previousNode.next = newNode
                 newNode.next = currentNode
         
-        if index > self.length():
-            newNodeIndex = -1
-        
         return newNodeIndex
 
+    def sortedAdd(self, value: int | float):
+        pass   
 
-
-    def get_nodes(self) -> tuple[Node | None, Node, Node | None]:
-        '''
-        Generates a tuple of ( PreviousNode (or None), currentNode, nextNode (or None) ).
-        '''
-        previousNode: Node = None
-        currentNode: Node = self.head
-        while currentNode:
-            yield (previousNode, currentNode, currentNode.next)
-            previousNode = currentNode
-            currentNode = currentNode.next 
+    def sort(self):
+        pass
 
 if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
 
     for x in range(15):
-        print(l.add(x))
+        l.add(x)
 
-    l.add(-5, 5)
-    l.add(99, 10)
-    l.add(66, -4)
+    # l.add(-5, 5)
+    # l.add(99, 10)
+    # l.add(66, -4)
+
+    l.display()
+
+    print(f"Removed {l.remove(3)}")
+    print(f"Removed {l.remove(0)}")
+    print(f"Removed {l.remove(5)}")
+
 
     l.display()
     
-    index, previousNode, currentNode, futureNode = l.get_node_at_index(-3)
-    print(index, currentNode.data, futureNode.data)
     # for prev,current,nxt in l.get_nodes():
     #     print("GEN_NODES:", current.data)
 
