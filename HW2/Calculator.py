@@ -90,11 +90,15 @@ class Caculator:
         # Infix to Postfix
         char: str
         for char in self.tempStack.dump():
-            if char == "0" or char == "1" \
-                        or char == "2" or char == "3" \
-                        or char == "4" or char == "5" \
-                        or char == "6" or char == "7" \
-                        or char == "8" or char == "9":
+            if "0" in char or "1" in char \
+                    or "2" in char or "3" in char or "4" in char \
+                    or "5" in char or "6" in char or "7" in char \
+                    or "8" in char or "9" in char:         
+            # if char == "0" or char == "1" \
+            #             or char == "2" or char == "3" \
+            #             or char == "4" or char == "5" \
+            #             or char == "6" or char == "7" \
+            #             or char == "8" or char == "9":
                 postfix.append(char)
             elif char == "(": 
                 self.stack.push(char)
@@ -204,7 +208,6 @@ if __name__ == '__main__':
 
     postfix = cal.convert(inp)
     print("postfix: ", postfix)
-    input()
     ans = cal.evaluate(postfix)
     print("infix: ", ans)
 
