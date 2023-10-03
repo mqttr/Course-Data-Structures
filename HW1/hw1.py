@@ -273,7 +273,12 @@ class LinkedList:
         """
         Returns the maximum value in the list
         """
+
         maxNode = self._find_node_max()
+
+        if maxNode == None:
+            return None
+
         return maxNode.data
     
     def findMin(self) -> float | int:
@@ -281,6 +286,10 @@ class LinkedList:
         Returns the minimum value in the list
         """
         minNode = self._find_node_min()
+
+        if minNode == None:
+            return None
+        
         return minNode.data
 
     def add(self, value: int | float, index=-1) -> int:
@@ -349,62 +358,42 @@ class LinkedList:
 if __name__ == '__main__':
     ## instantiating the linked list
     l = LinkedList()
+    
+    l.display()
+    try:
+        print("Max Value: ", l.findMax())
+    except:
+        print("l.findMax() threw error")
 
-    import gc
-
-    for x in range(25):
-        l.add(x)
-
-
-    l.add(-5, 5)
-    l.add(-5, 5)
-    l.add(99.5, 10)
+    l.add(1)
+    l.add(2)
     l.display()
-    l.add(66, -4)
+    l.remove(0)
     l.display()
 
-    s1 = Stack()
-    print('\n\nNODE OBJECTS: ')
-    for obj in gc.get_objects(): 
-        if isinstance(obj, Node): # Print all Node objects
-            print("Node Objects:", obj, obj.data)
-            s1.push(obj)
+    l.remove(0)
+    l.display()
+    try:
+        l.remove(0)
+        print("remove(0) with no elements didn't throw error")
+    except:
+        print("remove(0) with no elements did throw error")
 
-    l.sort()
-    l.display()
-    l.shuffle()
-    l.display()
-    l.sort()
-    l.display()
-    l.shuffle()
-    l.display()
-    l.shuffle()
-    l.display()
-    l.sort()
-    l.display()
+
+    # l.sort()
+    # l.display()
+    # l.shuffle()
+    # l.display()
+    # l.sort()
+    # l.display()
+    # l.shuffle()
+    # l.display()
+    # l.shuffle()
+    # l.display()
+    # l.sort()
+    # l.display()
 
     # print("Max:", l.findMax())
     # print("Min:", l.findMin())
-
-
-    s2 = Stack()
-    print('\n\nNODE OBJECTS: ')
-    for obj in gc.get_objects(): 
-        if isinstance(obj, Node): # Print all Node objects
-            print("Node Objects:", obj, obj.data)
-            s2.push(obj)
-
-    for x in range(l.length()):
-        if s1.pop() == s2.pop():
-            print(x, end=' ')
-        else:
-            print("NOT THE SAME!!!", end=' ')
-
-        
-    for dump in s1.dump():
-        print("HEY YOU MISSED SOME")
-
-    for dump in s2.dump():
-        print("HEY YOU MISSED SOME")
 
     print()
