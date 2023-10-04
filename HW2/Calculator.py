@@ -5,91 +5,119 @@
 #ID: 98210287
 #Email: mroland@unomaha.edu
 
-import string
+import re
 import stack
 
 class Caculator:
     def __init__(self):
-        self.stack = stack.Stack()
-        self.tempStack = stack.Stack()
+        self.primaryStack = stack.Stack()
+        self.secondaryStack = stack.Stack()
 
-    def convert(self, infixStr: str):
+    def convert(self, infixStr: str) -> list | str:
         '''
         Converts infix to postfix, returns list of postfix to keep multi length numbers
+        :param infixStr: Standard mathematical writing style
+        :return: Error message or postfix list
         '''
+        # ============================================ Setup ============================================
+        
         # use a stack to covert infix to postfix
-        self.stack.dump()
+        self.primaryStack.dump()
+        self.secondaryStack.dump()
+         
         postfix = [] # output
-        infixStr = infixStr.strip().replace(' ', '')
+        
+        # ============================================ Precleaning infix ============================================
 
+        infixStr = infixStr.strip().replace(' ', '')
+        
         # Checking for balanced ()
         try:
             for char in infixStr:
                 if char == "(":
-                    self.stack.push(char)
+                    self.primaryStack.push(char)
                 elif char == ")":
-                    self.stack.pop()
-            # Checking for leftover ()
-        except IndexError:   
+                    self.primaryStack.pop()
+        except IndexError:  
             return "Invalid Input: Unbalanced Parentheses: Too many )"
         finally: 
-            if self.stack.is_full():
+            # Checking for leftover ()
+            if self.primaryStack.is_full():
                 return "Invalid Input: Unbalanced Parentheses: Too few )"
+
             
-            self.stack.dump() # Stack should never be full here, but just to make sure :)
+        if infixStr[0] == "-":
+            infixStr = "0" + infixStr
 
 
-        for char in infixStr:
-            self.stack.push(char)
         
-        self.tempStack.dump()
-        lInfix = []
-        for char in self.stack.dump():
+
+        for i, char in enumerate(infixStr):   
+            if char == "0" or char == "1" \
+                    or char == "2" or char == "3" \
+                    or char == "4" or char == "5" \
+                    or char == "6" or char == "7" \
+                    or char == "8" or char == "9": 
+                if infixStr[i+1] == "(":
+                    return f"Error: Put * between {char} and ("
+            elif char == ")":
+                try:
+                    if infixStr[i+1] == "0" or infixStr[i+1] == "1" \
+                        or infixStr[i+1] == "2" or infixStr[i+1] == "3" \
+                        or infixStr[i+1] == "4" or infixStr[i+1] == "5" \
+                        or infixStr[i+1] == "6" or infixStr[i+1] == "7" \
+                        or infixStr[i+1] == "8" or infixStr[i+1] == "9": 
+                            return f"Error: Put * between ) and {char} "
+                except IndexError:
+                    break
+            elif char == "(":
+                try:
+                    if infixStr[i+1] == "-":
+                            return f"Error: Put 0 before -{infixStr[i+2]} as it is after a ("
+                except IndexError:
+                    break
+                
+            
+        # ============================================ Preparing for infix to postfix ============================================
+        # Creates proper stack with sparated operators and values are multiple 
+        
+        for char in infixStr:
+            self.primaryStack.push(char)
+        
+        self.secondaryStack.dump()
+        for char in self.primaryStack.dump():
             if char == "(" or char == ")" or char == "^" \
                         or char == "*" or char == "/" \
                         or char == "+" or char == "-":
-                self.tempStack.push(char)
+                self.secondaryStack.push(char)
             elif char == "0" or char == "1" \
                         or char == "2" or char == "3" \
                         or char == "4" or char == "5" \
                         or char == "6" or char == "7" \
                         or char == "8" or char == "9": 
-                if self.tempStack.is_full():
-                    if  "0" in self.tempStack.top() or "1" in self.tempStack.top()\
-                            or "2" in self.tempStack.top() or "3" in self.tempStack.top() \
-                            or "4" in self.tempStack.top() or "5" in self.tempStack.top() \
-                            or "6" in self.tempStack.top() or "7" in self.tempStack.top() \
-                            or "8" in self.tempStack.top() or "9" in self.tempStack.top(): 
-                        self.tempStack.push(char + self.tempStack.pop())
+                if self.secondaryStack.is_full():
+                    if "0" in self.secondaryStack.top() or "1" in self.secondaryStack.top() \
+                            or "2" in self.secondaryStack.top() or "3" in self.secondaryStack.top() \
+                            or "4" in self.secondaryStack.top() or "5" in self.secondaryStack.top() \
+                            or "6" in self.secondaryStack.top() or "7" in self.secondaryStack.top() \
+                            or "8" in self.secondaryStack.top() or "9" in self.secondaryStack.top(): 
+                        self.secondaryStack.push(char + self.secondaryStack.pop())
                     else:
-                        self.tempStack.push(char)
+                        self.secondaryStack.push(char)
                 else:
-                    self.tempStack.push(char)
+                    self.secondaryStack.push(char)
             else:
+                self.primaryStack.dump()
+                self.secondaryStack.dump()
                 return f"Invalid Input: {char}"
+            
 
-            # if char == "0": pass
-            # elif char == "1": pass
-            # elif char == "2": pass
-            # elif char == "3": pass
-            # elif char == "4": pass
-            # elif char == "5": pass
-            # elif char == "6": pass
-            # elif char == "7": pass
-            # elif char == "8": pass
-            # elif char == "9": pass
+        print( [ x for x in self.secondaryStack.peek_stack()] )
 
-        # Input fixer:
-        # x(y) = (x*y)
-        # replace regex: \(\d+\) to \s\d+\s
 
-        for x in self.tempStack.peek_stack():
-            print(x, end=' | ')
-        print()
-
-        # Infix to Postfix
+        # ============================================ Infix to Postfix ============================================
         char: str
-        for char in self.tempStack.dump():
+        for char in self.secondaryStack.dump():
             if "0" in char or "1" in char \
                     or "2" in char or "3" in char or "4" in char \
                     or "5" in char or "6" in char or "7" in char \
@@ -101,27 +129,31 @@ class Caculator:
             #             or char == "8" or char == "9":
                 postfix.append(char)
             elif char == "(": 
-                self.stack.push(char)
+                self.primaryStack.push(char)
             elif char == ")":
-                while self.stack.top() != "(":
-                    postfix.append(self.stack.pop())
-                self.stack.pop() # removes the remaining (
+                while self.primaryStack.top() != "(":
+                    postfix.append(self.primaryStack.pop())
+                self.primaryStack.pop() # removes the remaining (
             elif char == "^": 
-                self.stack.push(char)
+                self.primaryStack.push(char)
             elif char == "*" or char == "/":
-                while self.stack.top() == "*" or self.stack.top() == "/" or self.stack.top() == "^":
-                    postfix.append(self.stack.pop())
-                self.stack.push(char)
+                while self.primaryStack.top() == "*" or self.primaryStack.top() == "/" or self.primaryStack.top() == "^":
+                    postfix.append(self.primaryStack.pop())
+                self.primaryStack.push(char)
             elif char == "+" or char == "-":
-                while self.stack.top() == "*" or self.stack.top() == "/" or self.stack.top() == "^" or self.stack.top() == "+" or self.stack.top() == "-": 
-                    postfix.append(self.stack.pop())
-                self.stack.push(char)
+                while self.primaryStack.top() == "*" or self.primaryStack.top() == "/" or self.primaryStack.top() == "^" or self.primaryStack.top() == "+" or self.primaryStack.top() == "-": 
+                    postfix.append(self.primaryStack.pop())
+                self.primaryStack.push(char)
             else: 
+                self.primaryStack.dump()
+                self.secondaryStack.dump()
                 return f"Invalid Input: {char} Allowed Inputs: 0-9, *, /, +, -, (, ), ^"
 
-        for char in self.stack.dump():
+        for char in self.primaryStack.dump():
             postfix.append(char)
 
+        self.primaryStack.dump()
+        self.secondaryStack.dump()
         return postfix
         # You are not allowed to add additional functions e.g., precedence(), isOperator(), etc.
         # You are not allowed to create variables using a list or a dictionary like below. 
@@ -154,33 +186,47 @@ class Caculator:
         :param postfix: List of postfix values to keep values of more than 1 char in length
         '''
         #Use stack of tokens
-        self.stack.dump()
+        self.primaryStack.dump()
+        
+        if not type(postfix) == type(list()):
+            return "Calculations can only be done with postfix lists not strings"
+        
         
         DIVFLAG = False
         for char in postfix:
             if char == '*' or char == '/' or char == '+' or char == '-' or char == '^':  # operators
-                val2 = float(self.stack.pop())
-                val1 = float(self.stack.pop())
+                try:  
+                    val2 = float(self.primaryStack.pop())
+                    val1 = float(self.primaryStack.pop())
+                except IndexError:
+                    return "Error: Operators in wrong positions"
 
                 if char == '^':
-                    self.stack.push(val1**val2)     
+                    self.primaryStack.push(val1**val2)     
                 if char == '*':
-                    self.stack.push(val1*val2)     
+                    self.primaryStack.push(val1*val2)     
                 if char == '/':
                     DIVFLAG = True
-                    self.stack.push(val1/val2)     
+                    self.primaryStack.push(val1/val2)     
                 if char == '+':
-                    self.stack.push(val1+val2)     
+                    self.primaryStack.push(val1+val2)     
                 if char == '-':
-                    self.stack.push(val1-val2)   
+                    self.primaryStack.push(val1-val2)   
             else:
-                self.stack.push(char)  
+                self.primaryStack.push(char)  
 
-        answer = self.stack.pop()
+        answer = self.primaryStack.pop()
+
+        if self.primaryStack.is_full():
+            return "Error: remaining values in stack"
 
         if DIVFLAG:
+            self.primaryStack.dump()
+            self.secondaryStack.dump()
             return float(answer)
         else:
+            self.primaryStack.dump()
+            self.secondaryStack.dump()
             return int(answer)
 
         # Keep the instructions below with your code.
@@ -203,7 +249,7 @@ if __name__ == '__main__':
     #input = ; # Get input from a user
 
     # inp = input("Input: ")
-    inp = "12*2"
+    inp = "12*(-2*3)"
 
 
     postfix = cal.convert(inp)
@@ -212,4 +258,7 @@ if __name__ == '__main__':
     print("infix: ", ans)
 
 
-# 12 4 3 9 18 7 2 17 13 1 5 6
+
+
+
+# ASK PPROFESSOR ABOUT REGEX 
