@@ -202,13 +202,18 @@ class Caculator:
         Returns the calculated value based off of the postfix provided. Float if division is used otherwise int .
         :param postfix: List of postfix values to keep values of more than 1 char in length
         '''
+        # ============================================ Setup ============================================
+        
         #Use stack of tokens
         self.primaryStack.burn()
         self.secondaryStack.burn()
         
+        # ============================================ Fixing ============================================
+        
         if not type(postfix) == type(list()):
             return "Calculations can only be done with postfix lists not strings"
         
+        # ============================================ Calculating ============================================
         
         DIVFLAG = False
         for char in postfix:
