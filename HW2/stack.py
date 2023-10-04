@@ -50,6 +50,13 @@ class Stack():
             yield self.pop()
         return
 
+    def burn(self):
+        '''
+        Just empties stack, Call when just to empty stack
+        '''
+        while self.__top_element.previous_element():
+            self.pop()
+
     def top(self):
         return self.__top_element.view_element()
 
