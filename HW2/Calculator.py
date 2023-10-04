@@ -22,9 +22,9 @@ class Caculator:
         # ============================================ Setup ============================================
         
         # use a stack to covert infix to postfix
-        self.primaryStack.dump()
-        self.secondaryStack.dump()
-         
+        self.primaryStack.burn()
+        self.secondaryStack.burn()
+        
         postfix = [] # output
         
         # ============================================ Precleaning infix ============================================
@@ -39,16 +39,30 @@ class Caculator:
                 elif char == ")":
                     self.primaryStack.pop()
         except IndexError:  
+            self.primaryStack.burn()
+            self.secondaryStack.burn()
             return "Invalid Input: Unbalanced Parentheses: Too many )"
         finally: 
             # Checking for leftover ()
             if self.primaryStack.is_full():
+                self.primaryStack.burn()
+                self.secondaryStack.burn()
                 return "Invalid Input: Unbalanced Parentheses: Too few )"
 
             
         if infixStr[0] == "-":
             infixStr = "0" + infixStr
 
+        infixStr = re.sub(r"-(-\d+?)", "-(\g<1>)", infixStr)        # ...--... -> ...-(...)...
+
+        infixStr = re.sub(r"\((-\d+?)", "((0\g<1>)", infixStr)      # ...(-x... -> ...((0-x)...
+        
+        infixStr = re.sub(r"(\d+?)\(", "\g<1>*(", infixStr)         # ...y(x... -> ...y*x...
+        
+        infixStr = re.sub(r"\)(\d+?)", ")*\g<1>", infixStr)         # ...y)x... -> ...y)*x...
+        
+        infixStr = re.sub(r"\)\(", ")*(", infixStr)                 # ...)(... -> ...)*(...
+        
 
         
 
@@ -58,8 +72,11 @@ class Caculator:
                     or char == "4" or char == "5" \
                     or char == "6" or char == "7" \
                     or char == "8" or char == "9": 
-                if infixStr[i+1] == "(":
-                    return f"Error: Put * between {char} and ("
+                try:
+                    if infixStr[i+1] == "(":
+                        return f"Error: Put * between {char} and ("
+                except IndexError:
+                    pass
             elif char == ")":
                 try:
                     if infixStr[i+1] == "0" or infixStr[i+1] == "1" \
@@ -84,7 +101,7 @@ class Caculator:
         for char in infixStr:
             self.primaryStack.push(char)
         
-        self.secondaryStack.dump()
+        self.secondaryStack.burn()
         for char in self.primaryStack.dump():
             if char == "(" or char == ")" or char == "^" \
                         or char == "*" or char == "/" \
@@ -107,12 +124,12 @@ class Caculator:
                 else:
                     self.secondaryStack.push(char)
             else:
-                self.primaryStack.dump()
-                self.secondaryStack.dump()
+                self.primaryStack.burn()
+                self.secondaryStack.burn()
                 return f"Invalid Input: {char}"
             
 
-        print( [ x for x in self.secondaryStack.peek_stack()] )
+        # print( [ x for x in self.secondaryStack.peek_stack()] )
 
 
         # ============================================ Infix to Postfix ============================================
@@ -145,15 +162,15 @@ class Caculator:
                     postfix.append(self.primaryStack.pop())
                 self.primaryStack.push(char)
             else: 
-                self.primaryStack.dump()
-                self.secondaryStack.dump()
+                self.primaryStack.burn()
+                self.secondaryStack.burn()
                 return f"Invalid Input: {char} Allowed Inputs: 0-9, *, /, +, -, (, ), ^"
 
         for char in self.primaryStack.dump():
             postfix.append(char)
 
-        self.primaryStack.dump()
-        self.secondaryStack.dump()
+        self.primaryStack.burn()
+        self.secondaryStack.burn()
         return postfix
         # You are not allowed to add additional functions e.g., precedence(), isOperator(), etc.
         # You are not allowed to create variables using a list or a dictionary like below. 
@@ -186,7 +203,8 @@ class Caculator:
         :param postfix: List of postfix values to keep values of more than 1 char in length
         '''
         #Use stack of tokens
-        self.primaryStack.dump()
+        self.primaryStack.burn()
+        self.secondaryStack.burn()
         
         if not type(postfix) == type(list()):
             return "Calculations can only be done with postfix lists not strings"
@@ -199,7 +217,7 @@ class Caculator:
                     val2 = float(self.primaryStack.pop())
                     val1 = float(self.primaryStack.pop())
                 except IndexError:
-                    return "Error: Operators in wrong positions"
+                    return "Error: Operators are wack"
 
                 if char == '^':
                     self.primaryStack.push(val1**val2)     
@@ -207,7 +225,11 @@ class Caculator:
                     self.primaryStack.push(val1*val2)     
                 if char == '/':
                     DIVFLAG = True
-                    self.primaryStack.push(val1/val2)     
+                    try:
+                        
+                        self.primaryStack.push(val1/val2)     
+                    except ZeroDivisionError:
+                        return "Error: Divide by Zero Error"
                 if char == '+':
                     self.primaryStack.push(val1+val2)     
                 if char == '-':
@@ -221,12 +243,12 @@ class Caculator:
             return "Error: remaining values in stack"
 
         if DIVFLAG:
-            self.primaryStack.dump()
-            self.secondaryStack.dump()
+            self.primaryStack.burn()
+            self.secondaryStack.burn()
             return float(answer)
         else:
-            self.primaryStack.dump()
-            self.secondaryStack.dump()
+            self.primaryStack.burn()
+            self.secondaryStack.burn()
             return int(answer)
 
         # Keep the instructions below with your code.
@@ -249,16 +271,27 @@ if __name__ == '__main__':
     #input = ; # Get input from a user
 
     # inp = input("Input: ")
-    inp = "12*(-2*3)"
+    
+    p = cal.convert(input("input: "))
+    print(cal.evaluate(p))
+
+    # for inp in [ 
+    #             "1--4", 
+    #             "53**3",
+    #             "1+4",
+    #             "(5 + 9) * ((2 - 4 * 2) / 2) + 2^9 ",
+    #             "5/2*5/2+1 ",
+    #             "(5+4 *",
+    #             "(1 + 2) * 3 * ((6 * 6) + 1)",
+    #             ]:
+    #     print(inp)
+    #     postfix = cal.convert(inp)
+    #     print("postfix: ", postfix)
+    #     ans = cal.evaluate(postfix)
+    #     print("infix: ", ans)
+    #     print()
 
 
-    postfix = cal.convert(inp)
-    print("postfix: ", postfix)
-    ans = cal.evaluate(postfix)
-    print("infix: ", ans)
 
 
-
-
-
-# ASK PPROFESSOR ABOUT REGEX 
+# ASK PPROFESSOR ABOUT REGEX & .REPLACE
