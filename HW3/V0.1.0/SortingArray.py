@@ -100,8 +100,8 @@ class SortFuncs():
             return sorted(data)
         result = []
         mid = int(len(data) / 2)
-        y = merge_sort(data[:mid])
-        z = merge_sort(data[mid:])
+        y = SortFuncs.merge(data[:mid])
+        z = SortFuncs.merge(data[mid:])
         i = 0
         j = 0
         while i < len(y) and j < len(z):
