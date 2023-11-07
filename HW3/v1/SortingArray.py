@@ -10,8 +10,19 @@ import matplotlib.pyplot as plt
 import math
 
 
-from colors import *
-
+class colors:
+    '''
+    Command prompt colors. 
+    '''
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
 
 readable = {
     1: {
@@ -34,6 +45,9 @@ class TimingValues():
     FIRSTSEND = time.time()
 
 class sorting():
+    '''
+    Class to contain all sorting algorithms.
+    '''
     def bubble(data): # Class Notes
         temp = 0
         n = len(data)
@@ -153,15 +167,26 @@ class sorting():
         return _quick_sort(inp, 0, len(inp)-1)
 
 
-def log(msg: str, *args) -> None:
-    if args and COLORS:
-        msg = ''.join(args) + msg + colors.ENDC
+def log(msg: str, *colorargs) -> None:
+    '''
+    Prints a log with specific formating, colors can be enabled by setting ENABLECOLORS (bool) to true. Useful for manual timing.
+    
+    :param msg: Message to be printed out
+    :param *colorargs: string variables from the colors class for command prompt colors.
+    '''
+    if colorargs and ENABLECOLORS:
+        msg = ''.join(colorargs) + msg + colors.ENDC
 
     currentSend = time.time()
     print(f'  {datetime.fromtimestamp(currentSend).strftime('%Y-%m-%d %H:%M:%S'):<19} | {currentSend - TimingValues.LASTSEND:<10.5f} | {currentSend - TimingValues.FIRSTSEND:<10.5f}| {msg}')
     TimingValues.LASTSEND = currentSend
 
-def graph(lengths) -> None:
+def graph(lengths: list) -> None:
+    '''
+    Creates a series of graphs and takes every step to create said graphs. Tests all algorithms with consistent inputs.
+
+    :param lengths: A list of desired lengths for the 3 various input list states.
+    '''
     log('Graphing Mode Initiated. This will take some time.', colors.HEADER)
     
     results = {
@@ -214,16 +239,21 @@ def graph(lengths) -> None:
             plt.xticks([0,1,2], oLabel, fontsize=15)
 
 
-
-
-
-
     log('Finished please enjoy')
 
     plt.tight_layout(w_pad=6)
     plt.show()
 
 def time_algorithm(algorithm: int, data: list) -> float:
+    '''
+    Test the function given algorithm using the data list as input. This function does not create new list for a sort function call.
+
+    :param int algorithm: 1 bubble 2 selection 3 insertion 4 shell 5 merge 6 quick
+    :param list data: List of integers to be input for the given function
+
+    :return: Returns the time the algorithm took using time.time()
+    :rtype: float
+    '''
     algorithms = {
         1:sorting.bubble,
         2:sorting.selection,
@@ -246,6 +276,9 @@ def time_algorithm(algorithm: int, data: list) -> float:
     return diff
 
 def main() -> None:
+    '''
+    Main function to validate information and call proper paths of testing. Uses stdin as input.
+    '''
     if len(sys.argv) > 1 and sys.argv[1].lower() == 'graph':
         try:
             arg = list(map(int, sys.argv[2:]))
@@ -265,7 +298,7 @@ def main() -> None:
     # Checking Length of Input
     if len(sys.argv[1:]) < 3:
         log('Not enough arguments', colors.FAIL, colors.BOLD)
-        log('Arguments must be a series of 3 numbers, or "graph" and optionally up to 6 list length integers')
+        log('Arguments must be a series of 3 integers, or "graph" and optionally up to 6 list length integers')
         log('Exiting...', colors.FAIL, colors.BOLD)
 
         exit(1)
@@ -328,7 +361,14 @@ def generate_input(order: int, length: int) -> list:
     return l
 
 if __name__ == "__main__":
-    print(colors.BOLD + colors.UNDERLINE +  f".{'Current Time':^20} | {'Δ Last Msg':^10} | {'Δ Start':^9} | {'Log Message':^30} ." + colors.ENDC)
-    log('Started application; Colors disabled in v1')
+    log('Started application')
 
+    ENABLECOLORS = False
+    log('Colors disabled for v1')
+
+    if ENABLECOLORS:
+        print(colors.BOLD + colors.UNDERLINE +  f".{'Current Time':^20} | {'Δ Last Msg':^10} | {'Δ Start':^9} | {'Log Message':^30} ." + colors.ENDC)
+    else:
+        print(f" {'Current Time':^20} | {'Δ Last Msg':^10} | {'Δ Start':^9} | {'Log Message':^30}  ")
+    
     main()

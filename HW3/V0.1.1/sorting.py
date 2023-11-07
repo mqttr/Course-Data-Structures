@@ -5,7 +5,6 @@ def bubble(data): # Class Notes
     n = len(data)
     for i in range(n):
         for j in range(0, n-i-1):
-            # if out of order, swap!
             
             if data[j] > data[j+1]:
                 temp = data[j]
