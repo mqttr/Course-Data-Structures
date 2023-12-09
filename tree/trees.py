@@ -38,66 +38,40 @@ class BinaryTree():
         return False
 
 
-    # def __insert(node: Node, key):    :(
-    #     if not node.left: 
-    #         node.left = Node(key)
-    #         return node.left
-    #     if not node.right:
-    #         node.right = Node(key)
-    #         return node.right
-        
-    #     result = BinaryTree.__insert(node.left, key)
-    #     if result:
-    #         return result
-    #     result = BinaryTree.__insert(node.right, key)
-    #     if result:
-    #         return result
-
-
     def delete(self, id: int | Node):
+        print('delete call')
+
         if not type(id) == Node:
             deleteNode: Node = self.get_node(id)
         else:
             deleteNode: Node = id
-
+        print(self.root)
+        input(deleteNode)
         if deleteNode == None:
             return True
         
-        parent = self.get_parent(deleteNode)
-        if parent == None: 
-            if (deleteNode.left == None):
-                self.root = deleteNode.right
-                return True
-            elif (deleteNode.right == None):
-                self.root = deleteNode.left
-                return True
-            else:
-                switchingNode = deleteNode.right
-                while switchingNode.left:
-                    switchingNode = switchingNode.left
-                self.swap(deleteNode, switchingNode)
-                self.delete(deleteNode)
-                return True
-                
         if (deleteNode.left == None) or (deleteNode.right == None):
-            if parent.left == deleteNode:
-                if deleteNode.left == None:
-                    parent.left = deleteNode.right
-                else:
-                    parent.left = deleteNode.left
-            if parent.right == deleteNode:
-                if deleteNode.left == None:
-                    parent.right = deleteNode.right
-                else:
-                    parent.right = deleteNode.left
+            parent = self.get_parent(deleteNode)
+
+            input(parent)
+            if parent == None:
+                self.root = None
+            elif parent.left == deleteNode:
+                parent.left = None
+            elif parent.right == deleteNode:
+                parent.right = None
+
             return True
-        else:
-            switchingNode = deleteNode.right
-            while switchingNode.left:
-                switchingNode = switchingNode.left
-            self.swap(deleteNode, switchingNode)
-            self.delete(deleteNode)
-            return True
+
+        switchingNode = deleteNode.right
+        while switchingNode.left:
+            switchingNode = switchingNode.left
+        self.swap(deleteNode, switchingNode)
+        self.delete(deleteNode)
+        return True
+            
+                    
+
         
     def swap(self, first: Node | int, second: Node | int) -> bool:
         if not type(first) == Node:
@@ -108,9 +82,36 @@ class BinaryTree():
         if not (type(first) == Node and type(second) == Node):
             return False
         
-        firstParent = self.get_parent(first)
-        secondParent = self.get_parent(second)
+        self.__swap_parents(first, second)
+        self.__swap_children(first, second)
 
+        return True
+
+    def __swap_parents(self, first: Node, second: Node):
+
+
+        if first == self.root:
+            self.root = second
+        elif second == self.root:
+            self.root = first
+        else:
+            firstParent = self.get_parent(first)
+            secondParent = self.get_parent(second)
+
+            if (firstParent.left, secondParent.left) == (first, second):
+                firstParent.left = second
+                secondParent.left = first
+            if (firstParent.right, secondParent.left) == (first, second):
+                firstParent.right = second
+                secondParent.left = first
+            if (firstParent.left, secondParent.right) == (first, second):
+                firstParent.left = second
+                secondParent.right = first
+            if (firstParent.right, secondParent.right) == (first, second):
+                firstParent.right = second
+                secondParent.right = first
+
+    def __swap_children(self, first: Node, second: Node):
         firstLeft = first.left
         firstRight = first.right
 
@@ -123,22 +124,8 @@ class BinaryTree():
         second.left = firstLeft
         second.right = firstRight
 
-        if (firstParent.left, secondParent.left) == (first, second):
-            firstParent.left = second
-            secondParent.left = first
-        if (firstParent.right, secondParent.left) == (first, second):
-            firstParent.right = second
-            secondParent.left = first
-        if (firstParent.left, secondParent.right) == (first, second):
-            firstParent.left = second
-            secondParent.right = first
-        if (firstParent.right, secondParent.right) == (first, second):
-            firstParent.right = second
-            secondParent.right = first
-
         return True
 
-        
     def get_height(self, key: int):
         node = self.get_node(key)
 
@@ -163,14 +150,23 @@ class BinaryTree():
         return None
 
     def get_parent(self, child: Node | int) -> Node | None:
+        print('child', child)
+        input()
+        if child == None:
+            return False
         if not type(child) == Node:
             child = self.get_node(child)
+
+        input(child)
+        input(self.root)
+        if self.root == child: 
+            return None
 
         for parent in self.get_all_nodes():
             if parent.left == child or parent.right == child:
                 return parent
             
-        return None
+        return False
 
     def get_depth(self, key: int) -> int | None:
         if self.root == None:
@@ -305,7 +301,6 @@ class BinaryTree():
 
         BinaryTree.__in_order(node.left)
         print(node.key, end=' ')
-
         BinaryTree.__in_order(node.right)
 
     def __pre_order(node: Node) -> None:
